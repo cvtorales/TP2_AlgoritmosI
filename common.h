@@ -43,6 +43,7 @@ typedef struct {
 #endif
 
 #define MAX_ARGC 2
+define MAX_ARGC_DECO_BASE 2
 #define BASE 10
 
 
