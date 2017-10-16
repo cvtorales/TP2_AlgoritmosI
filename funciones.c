@@ -219,7 +219,7 @@ status_t copy_bin_to_csv(char* entrada, char* salida)
    
     while(fread(&juego, sizeof(juego), 1, fsalida) != EOF)
     {
-    	fprintf(fsalida, "%lu,%s\n,%s\n,%s\n,%lu\n,%f\n,%lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
+    	fprintf(fsalida, "%lu\n,%s\n,%s\n,%s\n,%lu\n,%f\n,%lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
     }     
 
     fclose(fsalida);
