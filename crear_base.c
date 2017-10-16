@@ -6,33 +6,29 @@
 
 int main (int argc, char *argv[])
 {
-	FILE *fentrada;
+	/************* DECLARACION DE VARIABLES *************/
+	FILE *fentrada, *fsalida;
 	status_t st;
-	char *linea,c;
+	char *linea,c,delimitador,**arreglo;
 	int cant_lineas;
-			/************* DECLARACION DE VARIABLES *************/
-	char *cadena[] = {"12658,Persona 5,Atlus,PS4,20170404,94,73",
-					  "68536,Zelda: Breath of the Wild,Nintendo,Switch,20170303,97,10"}; /* todavia no creo el campo time_t, simplemente meto otro size_t*/
-	char ** arreglo;
-	char delimitador;
 	size_t longitud; /* aca tambien uso un auxiliar de fechas*/
-	int i;
-	juego_t juego; /*ptr_juego;*/
+	juego_t *juego;
 
 	/************* INICIALIZACION DE VARIABLES *************/
 	longitud = 0;
 	arreglo = NULL;
-	delimitador = ',';
-	i = 0;
-	/*ptr_juego = &juego;*/
-
+	delimitador = DELIMITADOR;
+	juego = NULL;
 	linea = NULL;
-	if((st = validar_argumentos(argc,argv,&fentrada))!=ST_OK)
+
+    /******** VALIDACION DE ARGUMENTOS **********/
+	if((st = validar_argumentos(argc,argv,&fentrada,&fsalida))!=ST_OK)
 	{
 		fprintf(stderr, "Error en alguna validacion\n");
 		return EXIT_FAILURE;
 	}
-
+	/******** PROCESAMIENTO DE DATOS ************/
+	cant_lineas = 0;
 	do
 	{
 		if((st=leer_linea(fentrada,&cant_lineas,&linea,&c)) != ST_OK)
@@ -44,39 +40,39 @@ int main (int argc, char *argv[])
 			}
 			return EXIT_FAILURE;
 		}
-		printf("Linea %d) %s\n",cant_lineas +1,linea);
+		/*printf("Linea %d) %s\n",cant_lineas,linea);*/
+
+		/************* PARSEO DE UNA LINEA *************/
+		if((split(linea,delimitador,&arreglo,&longitud)) != ST_OK)
+		{
+			fprintf(stderr, "Algo salio mal con split :/\n");
+			return EXIT_FAILURE;
+		}
+
+		/************* IMPRESION DEL PARSEO *************/
+		/*for(i=0; i<longitud;i++)
+		{
+			printf("%s\n",arreglo[i]);
+		}*/
+	/************** CARGA DE DATOS EN ESTRUCTURA ***************/
+		if((st=cargar_datos(&juego,arreglo,longitud)) != ST_OK)
+		{
+			printf("ERROR EN LA CARGA DE DATOS EN LA MATRIZ\n");
+			destruir_arreglo_cadenas(&arreglo,longitud);
+			return EXIT_FAILURE;
+		}	
 		free(linea);
 		linea = NULL;
-	}while(c != EOF);
-	free(linea);
-	linea = NULL;
-
-
-
-
-	/************* PARSEO DE UNA LINEA *************/
-	if((split(cadena[1],delimitador,&arreglo,&longitud)) != ST_OK)
-	{
-		fprintf(stderr, "Algo salio mal :/\n");
-		return EXIT_FAILURE;
-	}
-
-	/************* IMPRESION DEL PARSEO *************/ /* esto esta solo para mostrar que se pudo parsear, despues no va*/ 
-	for(i=0; i<longitud;i++)
-	{
-		printf("%s\n",arreglo[i]);
-	}
-
-	if((st=cargar_datos(&juego,arreglo,longitud)) != ST_OK)
-	{
-		printf("ERROR EN LA CARGA DE DATOS EN LA MATRIZ\n");
 		destruir_arreglo_cadenas(&arreglo,longitud);
-		return EXIT_FAILURE;
-	}
+		
+		/*printf("Estructura:\nID: %u \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %u\nPUNTAJE: %f\nRESENIAS: %u\n", juego->id, juego->nombre, juego->desarrollador, juego->plataforma, juego->fecha, juego->puntaje, juego->resenias);*/
+		fwrite(juego,sizeof(juego_t),1,fsalida);
+		free(juego);
+		juego = NULL;
+	}while(c != EOF);
 
-	/*********************** IMPRIMIR ESTRUCTURA **********************/
-	printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %lu\nPUNTAJE: %f\nRESENIAS: %lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
-	destruir_arreglo_cadenas(&arreglo,longitud);
+	fclose(fentrada);
+	fclose(fsalida);
 
 	return EXIT_SUCCESS;
 }
