@@ -217,7 +217,7 @@ status_t copy_bin_to_csv(char* entrada, char* salida)
 
 	fprintf(fsalida,"Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %lu\nPUNTAJE: %f\nRESENIAS: %lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
    
-    while(fread(&juego, sizeof(juego), 1, fsalida) != EOF)
+    while(fread(&juego, sizeof(juego_t), 1, fsalida) != EOF)
     {
     	fprintf(fsalida, "%lu\n,%s\n,%s\n,%s\n,%lu\n,%f\n,%lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
     }     
