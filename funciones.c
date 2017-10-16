@@ -4,19 +4,24 @@
 #include "funciones.h"
 #include "common.h"
 
-status_t validar_argumentos(int argc, char *argv[], FILE **fentrada)
+status_t validar_argumentos(int argc, char *argv[], FILE **fentrada, FILE **fsalida)
 {
-	if( !argv || !fentrada)
+	if( !argv )
 	{
 		printf("entre a ST_ERROR_PUNTERO_NULO\n");
 		return ST_ERROR_PUNTERO_NULO;
 	}
-	if(argc != MAX_ARGC)
+	if(argc != MAX_ARGC_CREAR_BASE)
 	{
 		printf("entre a ST_ERROR_CANT_ARG\n");
 		return ST_ERROR_CANT_ARG;
 	}
 	if((*fentrada = fopen(argv[1],"rt"))==NULL)
+	{
+		printf("entre a ST_ERROR_APERTURA_ARCHIVO\n");
+		return ST_ERROR_APERTURA_ARCHIVO;
+	}
+	if((*fsalida = fopen(argv[2],"wb"))==NULL)
 	{
 		printf("entre a ST_ERROR_APERTURA_ARCHIVO\n");
 		return ST_ERROR_APERTURA_ARCHIVO;
@@ -55,6 +60,7 @@ status_t leer_linea(FILE *fentrada, int *cant_lineas, char **linea,char *c)
 		return ST_ERROR_NO_MEM;
 	}
 	strncpy(*linea, lineaBuffer, (count + 1));
+	(*cant_lineas)++;
 	free(lineaBuffer);
 	lineaBuffer = NULL;
 	return ST_OK;
@@ -145,11 +151,15 @@ status_t destruir_arreglo_cadenas(char *** campos, size_t n)
 	return ST_OK;
 }
 
-status_t cargar_datos(juego_t *ptr_juego,char **arreglo, size_t l)
+status_t cargar_datos(juego_t **ptr_juego,char **arreglo, size_t l)
 {
 	double puntaje_aux;
 	size_t id_aux, fecha_aux, resenias_aux;
 	char *temp;
+
+	/************* CREAR ESTRUCTURA DINAMINCA ************/
+	if((*ptr_juego = (juego_t *)malloc(sizeof(juego_t))) == NULL)
+		return ST_ERROR_NO_MEM;
 
 	/************* CARGAR INFORMACION EN ESTRUCTURAS *************/
 	/************* ID **********/
@@ -159,16 +169,16 @@ status_t cargar_datos(juego_t *ptr_juego,char **arreglo, size_t l)
 			printf("Error: no se pudo cargar el id en la estructura\n");
 			return ST_ERROR_CARGAR_ID;  
 		}
-	(ptr_juego)->id = id_aux;
+	(*ptr_juego)->id = id_aux;
 
 	/********** NOMBRE **************/
-	strcpy((ptr_juego)->nombre,(arreglo[1]));
+	strcpy((*ptr_juego)->nombre,(arreglo[1]));
 
 	/******** DESARROLLADOR ************/
-	strcpy((ptr_juego)->desarrollador,(arreglo[2]));
+	strcpy((*ptr_juego)->desarrollador,(arreglo[2]));
 
 	/*********** PLATAFORMA **********/
-	strcpy((ptr_juego)->plataforma,(arreglo[3]));
+	strcpy((*ptr_juego)->plataforma,(arreglo[3]));
 
 	/******** FECHA ************/
 	fecha_aux = strtol((arreglo[4]), &temp,BASE);
@@ -177,7 +187,7 @@ status_t cargar_datos(juego_t *ptr_juego,char **arreglo, size_t l)
 			printf("Error: no se pudo cargar la fecha en la estructura\n");
 			return ST_ERROR_CARGAR_FECHA;  
 		}
-	(ptr_juego)->fecha = fecha_aux;
+	(*ptr_juego)->fecha = fecha_aux;
 
 	/*********** PUNTAJE **********/
 	puntaje_aux = strtod((arreglo[5]), &temp);
@@ -186,7 +196,7 @@ status_t cargar_datos(juego_t *ptr_juego,char **arreglo, size_t l)
 			printf("Error: no se pudo cargar el puntaje en la estructura\n");
 			return ST_ERROR_CARGAR_PUNTAJE;  
 		}
-	(ptr_juego)->puntaje = puntaje_aux;
+	(*ptr_juego)->puntaje = puntaje_aux;
 	/******** RESENIAS ************/
 	resenias_aux = strtol((arreglo[6]), &temp,BASE);
 	if(*temp && *temp != '\n') 
@@ -194,7 +204,7 @@ status_t cargar_datos(juego_t *ptr_juego,char **arreglo, size_t l)
 			printf("Error: no se pudo cargar la resenia en la estructura\n");
 			return ST_ERROR_CARGAR_RESENIAS;  
 		}
-	(ptr_juego)->resenias = resenias_aux;
+	(*ptr_juego)->resenias = resenias_aux;
 
 	return ST_OK;
 }
@@ -215,11 +225,11 @@ status_t copy_bin_to_csv(char* entrada, char* salida)
         return ST_ERROR_APERTURA_ARCHIVO;                                  
     }
 
-	fprintf(fsalida,"Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %lu\nPUNTAJE: %f\nRESENIAS: %lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
+	fprintf(fsalida,"Estructura:\nID: %u \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %u\nPUNTAJE: %f\nRESENIAS: %u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
    
-    while(fread(&juego, sizeof(juego_t), 1, fsalida) != EOF)
+    while(fread(&juego, sizeof(juego), 1, fsalida) != EOF)
     {
-    	fprintf(fsalida, "%lu\n,%s\n,%s\n,%s\n,%lu\n,%f\n,%lu\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
+    	fprintf(fsalida, "%u\n,%s\n,%s\n,%s\n,%u\n,%f\n,%u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
     }     
 
     fclose(fsalida);
