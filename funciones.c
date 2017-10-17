@@ -209,33 +209,38 @@ status_t cargar_datos(juego_t **ptr_juego,char **arreglo, size_t l)
 	return ST_OK;
 }
 
-status_t copy_bin_to_csv(char* entrada, char* salida)
+status_t copy_bin_to_csv(FILE ** fentrada)
 {
-    FILE *fentrada, *fsalida;
+    FILE *faux;
     juego_t juego;
-
-    if ((fentrada = fopen(entrada,"rb")) == NULL)
-    {
-        return ST_ERROR_APERTURA_ARCHIVO;                                   
-    }
-
-    if ((fsalida = fopen(salida,"wt")) == NULL)
+	
+    if ((faux = fopen(faux.txt,"a")) == NULL) 
     {    
-        fclose(entrada);
-        return ST_ERROR_APERTURA_ARCHIVO;                                  
+        fclose(*fentrada);
+        return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;                         
+    }
+	
+    while(fread(&juego , sizeof(juego_t) , 1 , *fentrada) != EOF)
+    {
+	   fwrite(&juego , sizeof(juego_t) , 1 , faux);
+         
+    }     
+	
+    fclose(*fentrada);
+   
+    if((*fentrada=fopen("db.txt","w"))==NULL)
+    {
+         return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
     }
 
-	fprintf(fsalida,"Estructura:\nID: %u \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %u\nPUNTAJE: %f\nRESENIAS: %u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
-   
-    while(fread(&juego, sizeof(juego), 1, fsalida) != EOF)
+    while(fread(&juego,sizeof(juego_t),1, faux) != EOF )
     {
-    	fprintf(fsalida, "%u\n,%s\n,%s\n,%s\n,%u\n,%f\n,%u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
-    }     
+        fwrite(&juego,sizeof(juego_t),1, *fentrada);
+    }   
 
-    fclose(fsalida);
+    fclose(*fsalida);
+    fclose(faux);
 
-    fclose(fentrada);
-    
     return ST_OK;                                      
 }
 
@@ -251,7 +256,7 @@ status_t validar_argumentos_deco_base(int argc, char *argv[], FILE **fentrada)
 		printf("entre a ST_ERROR_CANT_ARG\n");
 		return ST_ERROR_CANT_ARG;
 	}
-	if((*fentrada = fopen(argv[1],"rt"))==NULL)
+	if((*fentrada = fopen(argv[1],"rb"))==NULL)
 	{
 		printf("entre a ST_ERROR_APERTURA_ARCHIVO\n");
 		return ST_ERROR_APERTURA_ARCHIVO;
