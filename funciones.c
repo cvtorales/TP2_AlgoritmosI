@@ -240,8 +240,8 @@ status_t copy_bin_to_csv(char* entrada, char* salida)
 }
 
 status_t validar_argumentos_deco_base(int argc, char *argv[], FILE **fentrada)
-{
-	if( !argv || !fentrada)
+{	
+	if( !argv )
 	{
 		printf("entre a ST_ERROR_PUNTERO_NULO\n");
 		return ST_ERROR_PUNTERO_NULO;
