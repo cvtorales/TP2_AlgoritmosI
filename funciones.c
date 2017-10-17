@@ -213,19 +213,19 @@ status_t copy_bin_to_csv(FILE ** fentrada)
 {
     FILE *faux;
     juego_t juego;
-	
+    
     if ((faux = fopen(faux.txt,"a")) == NULL) 
     {    
         fclose(*fentrada);
         return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;                         
     }
-	
+    
     while(fread(&juego , sizeof(juego_t) , 1 , *fentrada) != EOF)
     {
-	   fwrite(&juego , sizeof(juego_t) , 1 , faux);
+       fwrite(&juego , sizeof(juego_t) , 1 , faux);
          
     }     
-	
+    
     fclose(*fentrada);
    
     if((*fentrada=fopen("db.txt","w"))==NULL)
@@ -233,12 +233,13 @@ status_t copy_bin_to_csv(FILE ** fentrada)
          return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
     }
 
+    fprintf(*fentrada,"Estructura:\nID:\nNOMBRE:\nDESARROLLADOR:\nPLATAFORMA:\nFECHA:\nPUNTAJE:\nRESENIAS:\n");
     while(fread(&juego,sizeof(juego_t),1, faux) != EOF )
     {
-        fwrite(&juego,sizeof(juego_t),1, *fentrada);
+        fprintf(*fentrada, "%u\n,%s\n,%s\n,%s\n,%u\n,%f\n,%u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
     }   
 
-    fclose(*fsalida);
+    fclose(*fentrada);
     fclose(faux);
 
     return ST_OK;                                      
