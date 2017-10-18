@@ -36,13 +36,14 @@ typedef struct {
 				char nombre[100];
 				char desarrollador[100];
 				char plataforma[50];
-				size_t fecha; /* lo cambie temporalmente, despues vuelve a ser time_t */
+				char fecha[12];
 				double puntaje;
 				size_t resenias;
 				} juego_t;
 #endif
 
-#define MAX_ARGC 2
+#define MAX_ARGC_CREAR_BASE 3
+#define MAX_ARGC_DECO_BASE 2
 #define BASE 10
-
+#define DELIMITADOR ','
 

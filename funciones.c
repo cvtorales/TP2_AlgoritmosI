@@ -154,7 +154,7 @@ status_t destruir_arreglo_cadenas(char *** campos, size_t n)
 status_t cargar_datos(juego_t **ptr_juego,char **arreglo, size_t l)
 {
 	double puntaje_aux;
-	size_t id_aux, fecha_aux, resenias_aux;
+	size_t id_aux,resenias_aux;
 	char *temp;
 
 	/************* CREAR ESTRUCTURA DINAMINCA ************/
@@ -181,13 +181,7 @@ status_t cargar_datos(juego_t **ptr_juego,char **arreglo, size_t l)
 	strcpy((*ptr_juego)->plataforma,(arreglo[3]));
 
 	/******** FECHA ************/
-	fecha_aux = strtol((arreglo[4]), &temp,BASE);
-	if(*temp && *temp != '\n') 
-		{
-			printf("Error: no se pudo cargar la fecha en la estructura\n");
-			return ST_ERROR_CARGAR_FECHA;  
-		}
-	(*ptr_juego)->fecha = fecha_aux;
+	strcpy((*ptr_juego)->fecha,(arreglo[4]));
 
 	/*********** PUNTAJE **********/
 	puntaje_aux = strtod((arreglo[5]), &temp);
@@ -209,44 +203,8 @@ status_t cargar_datos(juego_t **ptr_juego,char **arreglo, size_t l)
 	return ST_OK;
 }
 
-status_t copy_bin_to_csv(FILE ** fentrada)
+status_t validar_argumentos_deco(int argc, char *argv[], FILE **fentrada, FILE **fsalida)
 {
-    FILE *faux;
-    juego_t juego;
-    
-    if ((faux = fopen(faux.txt,"a")) == NULL) 
-    {    
-        fclose(*fentrada);
-        return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;                         
-    }
-    
-    while(fread(&juego , sizeof(juego_t) , 1 , *fentrada) != EOF)
-    {
-       fwrite(&juego , sizeof(juego_t) , 1 , faux);
-         
-    }     
-    
-    fclose(*fentrada);
-   
-    if((*fentrada=fopen("db.txt","w"))==NULL)
-    {
-         return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-    }
-
-    fprintf(*fentrada,"Estructura:\nID:\nNOMBRE:\nDESARROLLADOR:\nPLATAFORMA:\nFECHA:\nPUNTAJE:\nRESENIAS:\n");
-    while(fread(&juego,sizeof(juego_t),1, faux) != EOF )
-    {
-        fprintf(*fentrada, "%u\n,%s\n,%s\n,%s\n,%u\n,%f\n,%u\n", juego.id, juego.nombre, juego.desarrollador, juego.plataforma, juego.fecha, juego.puntaje, juego.resenias);
-    }   
-
-    fclose(*fentrada);
-    fclose(faux);
-
-    return ST_OK;                                      
-}
-
-status_t validar_argumentos_deco_base(int argc, char *argv[], FILE **fentrada)
-{	
 	if( !argv )
 	{
 		printf("entre a ST_ERROR_PUNTERO_NULO\n");
@@ -260,6 +218,11 @@ status_t validar_argumentos_deco_base(int argc, char *argv[], FILE **fentrada)
 	if((*fentrada = fopen(argv[1],"rb"))==NULL)
 	{
 		printf("entre a ST_ERROR_APERTURA_ARCHIVO\n");
+		return ST_ERROR_APERTURA_ARCHIVO;
+	}
+	if((*fsalida = fopen("desbinarizacion_CSV.txt","wt"))==NULL)
+	{
+		printf("entre a ST_ERROR_APERTURA_ARCHIVO (desbinarizacion_CSV)\n");
 		return ST_ERROR_APERTURA_ARCHIVO;
 	}
 	return ST_OK;
