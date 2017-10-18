@@ -15,13 +15,13 @@ int main(int argc, char *argv[])
 
 	if((st = validar_argumentos_deco(argc,argv,&fentrada,&fsalida))!=ST_OK)
 	{
-		fprintf(stderr, "Error en alguna validacion\n");
+		fprintf(stderr, MSJ_ERROR_VALIDACION);
 		return EXIT_FAILURE;
 	}
 	
 	if((arreglo = (char **)malloc(sizeof(char *)*7)) == NULL)
 	{
-		printf("No hay memoria para crear el arreglo\n");
+		printf(MSJ_ERROR_NO_MEM_ARR);
 		fclose(fentrada);
 		fclose(fsalida);
 		return EXIT_FAILURE;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	fseek( fentrada, 0, SEEK_SET );
 	if ((fread(ptr_juego , sizeof(juego_t) , 1 , fentrada)) != 1)
 	{
-		printf("No se pudo leer la estructura\n");
+		printf(MSJ_ERROR_LECTURA_STRUCT);
 		fclose(fentrada);
 		fclose(fsalida);
 		return EXIT_FAILURE;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	{
 		if(((arreglo[2]) = (char *)malloc(sizeof(char)*strlen(ptr_juego->nombre)+1)) == NULL)
 		{
-			printf("No hay memoria para crear el arreglo[2]\n");
+			printf(MSJ_ERROR_NO_MEM_ARR2);
 			free(arreglo);
 			arreglo = NULL;
 			fclose(fentrada);
