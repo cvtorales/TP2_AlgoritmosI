@@ -46,4 +46,8 @@ typedef struct {
 #define MAX_ARGC_DECO_BASE 2
 #define BASE 10
 #define DELIMITADOR ','
+#define MSJ_ERROR_VALIDACION "Error en alguna validacion\n"
+#define MSJ_ERROR_NO_MEM_ARR "No hay memoria para crear el arreglo\n"
+#define MSJ_ERROR_LECTURA_STRUCT "No se pudo leer la estructura\n"
+#define MSJ_ERROR_NO_MEM_ARR2 "No hay memoria para crear el arreglo[2]\n"
 
