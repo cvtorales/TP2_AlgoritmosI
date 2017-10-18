@@ -158,9 +158,9 @@ status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t * ptr_juego_d
 					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 				}
 
-	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) != 1 )
+	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) == 1 )
 	{	
-		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) != 1)
+		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) == 1)
 		{			
 			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
 			{
@@ -183,7 +183,7 @@ status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t * ptr_juego_d
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
 
-	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != 1 )
+	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
 	{
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 	}	
@@ -199,9 +199,9 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t * pt
 {
 	FILE * temp;
 	
-	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) != 1 )
+	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) == 1 )
 	{	
-		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) != 1)
+		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) == 1)
 		{			
 			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
 			{
@@ -231,7 +231,7 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t * pt
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
 
-	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != 1 )
+	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
 	{
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 	}	
