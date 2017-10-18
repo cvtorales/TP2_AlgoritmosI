@@ -4,8 +4,8 @@
 #include "common.h"
 
 #define CANTIDAD_DE_ARGUMENTOS_PUNTAJE 8
-#define NOMBRE_ARCHIVO_BASE_DE_DATOS "data.bin"
-#define NOMBRE_ARCHIVO_A_MODIFICAR "db.bin"
+#define NOMBRE_ARCHIVO_BASE_DE_DATOS "db.bin"
+#define NOMBRE_ARCHIVO_A_MODIFICAR "data.bin"
 #define NOMBRE_ARCHIVO_PARA_MSJS_DE_ERRORES "errores.txt"
 /*************** NUMERO DE POSICIONES PARA ARGUMENTOS ******************/
 #define ARG_CMD_NUMERO_DE_POSICION_OPERACION 1
@@ -43,21 +43,31 @@ int main (int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-/*switch()   me falta poner este switch, para el caso de altas,bajas o modificaciones
-	{
-		case "A": 
-		case "B":
-		case "M":
-	}*/
-	if((procesar_altas(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
-		return EXIT_FAILURE;
+		switch(*(argv[1]))
+		{
+			case 'A':
+					if((procesar_altas(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
+						return EXIT_FAILURE;
+					break;
 
-	if((procesar_bajas(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
-		return EXIT_FAILURE;
+			case 'B':
+					if((procesar_bajas(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
+						return EXIT_FAILURE;
+					break;
+			
+			case 'M':
+					if((procesar_modificaciones(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
+						return EXIT_FAILURE;
+					break;
+			default:
+			
+			return EXIT_FAILURE;
+		}
 
-	if((procesar_modificaciones(&data, &db, ptr_juego_data, ptr_juego_db ))!=ST_OK)
-		return EXIT_FAILURE;
 
+
+	
+	
 	return EXIT_SUCCESS;
 }
 
@@ -75,10 +85,18 @@ status_t validar_argumentos_puntaje (int argc, char * argv[], FILE **fentrada, F
 		return ST_ERROR_CANTIDAD_INVALIDA_DE_ARGUMENTOS; 
 	
 /********************** Se validan las banderas ****************************/	
+	if(*(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'A'
+		&& *(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'B'
+		&& *(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'C')
+				return ST_ERROR_CMD_ARG_OPERACION;
+		
+		
+
+/*
 	if(	strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "A") 
 		&& strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "B")
 		 &&	strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "M") )
-		return ST_ERROR_CMD_ARG_OPERACION;
+*/
 
 
 	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_BAMDERA_ARCHIVO_BASE_DE_DATOS], "-if"))
@@ -96,9 +114,9 @@ status_t validar_argumentos_puntaje (int argc, char * argv[], FILE **fentrada, F
 	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_BANDERA_ARCHIVO_MSJS_ERROR], "-log"))
 		return ST_ERROR_CMD_ARG_BANDERA_PARA_ARCHIVO_MSJS_DE_ERRORES;
 
-	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_NOMBRE_ARCHIVO_MSJS_ERROR], NOMBRE_ARCHIVO_PARA_MSJS_DE_ERRORES))
+/*	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_NOMBRE_ARCHIVO_MSJS_ERROR], NOMBRE_ARCHIVO_PARA_MSJS_DE_ERRORES))
 		return ST_ERROR_CMD_ARG_NOMBRE_ARCHIVO_MSJ_DE_ERRORES_INVALIDO;
-
+*/
 		if((*fentrada = fopen(argv[3],"rb"))==NULL)
 	{
 		printf("entre a ST_ERROR_APERTURA_ARCHIVO_ENTRADA\n");
@@ -134,21 +152,22 @@ status_t procesar_altas(FILE ** fentrada, FILE ** fsalida, juego_t * ptr_juego_d
 status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t * ptr_juego_data, juego_t * ptr_juego_db )
 {
 	FILE * temp;
-	
-	while(fread(&((ptr_juego_db)->id),sizeof(size_t),1, *fsalida) != EOF )
-	{	
-		while(fread(&((ptr_juego_data)->id),sizeof(size_t),1, *fentrada) != EOF)
-		{			
-			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
-			{
-			
-				if((temp=fopen("temp.bin","wb"))==NULL)
+					if((temp=fopen("temp.bin","wb"))==NULL)
 				{
 					printf("entre a error de archivo temporal\n");
 					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 				}
-				
-					fwrite(ptr_juego_db,sizeof(juego_t),1, temp);
+
+	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) != 1 )
+	{	
+		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) != 1)
+		{			
+			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
+			{
+			
+
+			printf("entre una vez\n");
+			fwrite(ptr_juego_db,sizeof(juego_t),1, temp);
 			
 			}
 
@@ -164,7 +183,7 @@ status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t * ptr_juego_d
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
 
-	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != EOF )
+	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != 1 )
 	{
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 	}	
@@ -180,14 +199,14 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t * pt
 {
 	FILE * temp;
 	
-	while(fread(&((ptr_juego_db)->id),sizeof(size_t),1, *fsalida) != EOF )
+	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) != 1 )
 	{	
-		while(fread(&((ptr_juego_data)->id),sizeof(size_t),1, *fentrada) != EOF)
+		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) != 1)
 		{			
 			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
 			{
 			
-				if((temp=fopen("temp.bin","ab"))==NULL)  /* puse ab porque escribo dos veces */
+				if((temp=fopen("temp.bin","wb"))==NULL)  /* puse ab porque escribo dos veces */
 				{
 					printf("entre a error de archivo temporal\n");
 					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
@@ -212,7 +231,7 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t * pt
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
 
-	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != EOF )
+	while(fread(&ptr_juego_db,sizeof(juego_t),1, temp) != 1 )
 	{
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 	}	
