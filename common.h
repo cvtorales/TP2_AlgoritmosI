@@ -50,4 +50,6 @@ typedef struct {
 #define MSJ_ERROR_NO_MEM_ARR "No hay memoria para crear el arreglo\n"
 #define MSJ_ERROR_LECTURA_STRUCT "No se pudo leer la estructura\n"
 #define MSJ_ERROR_NO_MEM_ARR2 "No hay memoria para crear el arreglo[2]\n"
+#define MSJ_ERROR_SPLIT "Error al parsear con la funcion split\n"
+#define MSJ_ERROR_CARGA_STRUCT "error al cargar la estructura\n"
 
