@@ -25,7 +25,7 @@ int main (int argc, char *argv[])
     /******** VALIDACION DE ARGUMENTOS **********/
 	if((st = validar_argumentos(argc,argv,&fentrada,&fsalida))!=ST_OK)
 	{
-		fprintf(stderr, "Error en alguna validacion\n");
+		fprintf(stderr, MSJ_ERROR_VALIDACION);
 		return EXIT_FAILURE;
 	}
 	/******** PROCESAMIENTO DE DATOS ************/
@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
 	/************* PARSEO DE UNA LINEA *************/
 		if((split(linea,delimitador,&arreglo,&longitud)) != ST_OK)
 		{
-			fprintf(stderr, "Algo salio mal con split :/\n");
+			fprintf(stderr,MSJ_ERROR_SPLIT);
 			free(linea);
 			linea = NULL;
 			return EXIT_FAILURE;
@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 	/************** CARGA DE DATOS EN ESTRUCTURA ***************/
 		if((st=cargar_datos(&juego,arreglo,longitud)) != ST_OK)
 		{
-			printf("ERROR EN LA CARGA DE DATOS EN LA MATRIZ\n");
+			printf(MSJ_ERROR_CARGA_STRUCT);
 			free(linea);
 			linea = NULL;
 			destruir_arreglo_cadenas(&arreglo,longitud);
