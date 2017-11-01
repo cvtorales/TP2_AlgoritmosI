@@ -89,23 +89,11 @@ status_t validar_argumentos_puntaje (int argc, char * argv[], FILE **fentrada, F
 /********************** Se validan las banderas ****************************/	
 	if(*(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'A'
 		&& *(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'B'
-		&& *(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'C')
+		&& *(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION]) != 'M')
 				return ST_ERROR_CMD_ARG_OPERACION;
-		
-		
-
-/*
-	if(	strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "A") 
-		&& strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "B")
-		 &&	strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_OPERACION], "M") )
-*/
-
 
 	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_BAMDERA_ARCHIVO_BASE_DE_DATOS], "-if"))
 		return ST_ERROR_CMD_ARG_BANDERA_PARA_ARCHIVO_BASE_DE_DATOS;
-	
-	/*if ( strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_NOMBRE_ARCHIVO_BASE_DE_DATOS], NOMBRE_ARCHIVO_BASE_DE_DATOS) )
-		return ST_ERROR_CMD_ARG_NOMBRE_ARCHIVO_BASE_DATOS_INVALIDO;  */
 	
 	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_BANDERA_ARCHIVO_A_MODIFICAR], "-f"))
 		return ST_ERROR_CMD_ARG_BANDERA_PARA_ARCHIVO_A_MODIFICAR;
@@ -116,9 +104,6 @@ status_t validar_argumentos_puntaje (int argc, char * argv[], FILE **fentrada, F
 	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_BANDERA_ARCHIVO_MSJS_ERROR], "-log"))
 		return ST_ERROR_CMD_ARG_BANDERA_PARA_ARCHIVO_MSJS_DE_ERRORES;
 
-/*	if (strcmp(argv[ARG_CMD_NUMERO_DE_POSICION_NOMBRE_ARCHIVO_MSJS_ERROR], NOMBRE_ARCHIVO_PARA_MSJS_DE_ERRORES))
-		return ST_ERROR_CMD_ARG_NOMBRE_ARCHIVO_MSJ_DE_ERRORES_INVALIDO;
-*/
 		if((*fentrada = fopen(argv[3],"rb"))==NULL)
 	{
 		printf("entre a ST_ERROR_APERTURA_ARCHIVO_ENTRADA\n");
@@ -138,31 +123,25 @@ status_t validar_argumentos_puntaje (int argc, char * argv[], FILE **fentrada, F
 status_t procesar_altas(FILE ** fentrada, FILE ** fsalida, juego_t **ptr_juego_data, juego_t **ptr_juego_db )
 {
 	FILE * temp;
-	/*juego_t juego_aux,*ptr_aux;
-
-	ptr_aux = &juego_aux;  */
-					if((temp=fopen("temp.bin","wb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-	printf("linea 215\n\n");
+	
+	if((temp=fopen("temp.bin","wb"))==NULL)
+	{
+					
+		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
+	}
 
 	fseek( *fentrada, 0, SEEK_SET );
 	fseek( *fsalida, 0, SEEK_SET );
 	
-	
 	while(fread(*ptr_juego_data,sizeof(juego_t),1, *fsalida) == 1 )
 	{	
-			printf("primer while\n");
 			fwrite(*ptr_juego_data,sizeof(juego_t),1, temp);
 		while(fread(*ptr_juego_db,sizeof(juego_t),1, *fentrada) == 1)
-		{	
-			printf("segundo while\n");		
+		{			
 				
 			if(((*ptr_juego_data)->id) != ((*ptr_juego_db)->id))
 			{
-				printf("entre una vez\n");
+				
 				fwrite(*ptr_juego_db,sizeof(juego_t),1, temp);
 				
 				
@@ -179,109 +158,40 @@ status_t procesar_altas(FILE ** fentrada, FILE ** fsalida, juego_t **ptr_juego_d
 
 	if((*fsalida=fopen("db.bin","wb"))==NULL)
 	{
-		printf("entre a error de archivo temporal\n");
+		
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
-	printf("abrio archivo de.bin nuevamente\n");
+	
 		/*fseek( temp, 0, SEEK_SET ); */
 
 					if((temp=fopen("temp.bin","rb"))==NULL)
 				{
-					printf("entre a error de archivo temporal\n");
+					
 					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 				}
 
 	while(fread(ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
 	{
-		printf("leo de temp y paso a db.bin\n");
+		
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 		
-		/*printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %s\nPUNTAJE: %f\nRESENIAS: %lu\n", ptr_juego_db->id, ptr_juego_db->nombre, ptr_juego_db->desarrollador, ptr_juego_db->plataforma, ptr_juego_db->fecha, ptr_juego_db->puntaje, ptr_juego_db->resenias);*/
-	}	
+		}	
 
 	fclose(*fsalida);
 	fclose(temp);
 
 	return ST_OK;
-	
-
-/*
-		FILE * temp;
-					if((temp=fopen("temp.bin","wb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-
-	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) == 1 )
-	{	
-		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) == 1)
-		{			
-			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
-			{
-			
-
-			printf("entre una vez\n");
-			fwrite(ptr_juego_db,sizeof(juego_t),1, temp);
-			
-			}
-			if(((ptr_juego_data)->id) == ((ptr_juego_db)->id))
-				return ST_ERROR_ID_REPETIDO;
-
-		}
-	}
-
-	fclose(*fsalida);
-	fclose(*fentrada);
-
-	if((*fsalida=fopen("db.bin","wb"))==NULL)
-	{
-		printf("entre a error de archivo temporal\n");
-		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-	}
-
-	while(fread(ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
-	{
-		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
-	}	
-
-	fclose(*fsalida);
-	fclose(temp);
-
-	return ST_OK;
-
-
-*/
-
-
-/*
-
-				while(fread(&((ptr_juego_data)->id),sizeof(size_t),1, *fentrada) != EOF)
-				{	
-					while(fread(&((ptr_juego_db)->id),sizeof(size_t),1, *fsalida) != EOF )
-					{		
-						if(((ptr_juego_data)->id) == ((ptr_juego_db)->id))
-							return ST_ERROR_ID_REPETIDO;
-
-						fseek(*fsalida,SEEK_END,0);
-						fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
-					}
-				}
-	return ST_OK;  */
 }
 
 status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t **ptr_juego_data, juego_t **ptr_juego_db )
 {
 	FILE * temp;
-	/*juego_t juego_aux,*ptr_aux;
-
-	ptr_aux = &juego_aux;  */
-					if((temp=fopen("temp.bin","wb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-	printf("linea 215\n\n");
+				
+	if((temp=fopen("temp.bin","wb"))==NULL)
+	{
+		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
+	}
+	
 
 	fseek( *fentrada, 0, SEEK_SET );
 	fseek( *fsalida, 0, SEEK_SET );
@@ -290,20 +200,14 @@ status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t **ptr_juego_d
 	while(fread(*ptr_juego_data,sizeof(juego_t),1, *fsalida) == 1 )
 		
 	{	
-		printf("primer while\n");
 	while(fread(*ptr_juego_db,sizeof(juego_t),1, *fentrada) == 1)
 		
-		{	
-		printf("segundo while\n");		
+		{			
 			if(((*ptr_juego_data)->id) != ((*ptr_juego_db)->id))
 			{
 			
-
-			printf("entre una vez\n");
 			fwrite(*ptr_juego_db,sizeof(juego_t),1, temp);
-			/*printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %s\nPUNTAJE: %f\nRESENIAS: %lu\n", ptr_juego_db->id, ptr_juego_db->nombre, ptr_juego_db->desarrollador, ptr_juego_db->plataforma, ptr_juego_db->fecha, ptr_juego_db->puntaje, ptr_juego_db->resenias);*/
-	
-			
+						
 			}
 
 		}
@@ -315,24 +219,19 @@ status_t procesar_bajas(FILE ** fentrada, FILE ** fsalida, juego_t **ptr_juego_d
 
 	if((*fsalida=fopen("db.bin","wb"))==NULL)
 	{
-		printf("entre a error de archivo temporal\n");
+		
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
-	printf("abrio archivo de.bin nuevamente\n");
-		/*fseek( temp, 0, SEEK_SET ); */
 
-					if((temp=fopen("temp.bin","rb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
+	if((temp=fopen("temp.bin","rb"))==NULL)
+	{
+		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
+	}
 
 	while(fread(ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
 	{
-		printf("leo de temp y paso a db.bin\n");
 		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
 		
-		/*printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %s\nPUNTAJE: %f\nRESENIAS: %lu\n", ptr_juego_db->id, ptr_juego_db->nombre, ptr_juego_db->desarrollador, ptr_juego_db->plataforma, ptr_juego_db->fecha, ptr_juego_db->puntaje, ptr_juego_db->resenias);*/
 	}	
 
 	fclose(*fsalida);
@@ -347,105 +246,48 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t **pt
 	
 
 	FILE * temp;
-	/*juego_t juego_aux,*ptr_aux;
+	int control;
 
-	ptr_aux = &juego_aux;  */
-					if((temp=fopen("temp.bin","wb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-	printf("linea 215\n\n");
+	control = 0;
+
+	if((temp=fopen("temp.bin","wb"))==NULL)
+	{
+		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
+	}
 
 	fseek( *fentrada, 0, SEEK_SET );
 	fseek( *fsalida, 0, SEEK_SET );
 	
-	
-	while(fread(*ptr_juego_data,sizeof(juego_t),1, *fsalida) == 1 )
-		
+	while(fread(*ptr_juego_db,sizeof(juego_t),1, *fentrada) == 1 )	
 	{	
-		printf("primer while\n");
-	while(fread(*ptr_juego_db,sizeof(juego_t),1, *fentrada) == 1)
-		
-		{	
-		printf("segundo while\n");		
-			if(((*ptr_juego_data)->id) != ((*ptr_juego_db)->id))
-			{
-			
-
-			printf("entre una vez\n");
-			fwrite(*ptr_juego_db,sizeof(juego_t),1, temp);
-			/*printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %s\nPUNTAJE: %f\nRESENIAS: %lu\n", ptr_juego_db->id, ptr_juego_db->nombre, ptr_juego_db->desarrollador, ptr_juego_db->plataforma, ptr_juego_db->fecha, ptr_juego_db->puntaje, ptr_juego_db->resenias);*/
-	
-			
-			}
-
-		}
-	}
-
-	fclose(*fsalida);
-	fclose(*fentrada);
-	fclose(temp);
-
-	if((*fsalida=fopen("db.bin","wb"))==NULL)
-	{
-		printf("entre a error de archivo temporal\n");
-		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-	}
-	printf("abrio archivo de.bin nuevamente\n");
-		/*fseek( temp, 0, SEEK_SET ); */
-
-					if((temp=fopen("temp.bin","rb"))==NULL)
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-
-	while(fread(ptr_juego_db,sizeof(juego_t),1, temp) == 1 )
-	{
-		printf("leo de temp y paso a db.bin\n");
-		fwrite(ptr_juego_db,sizeof(juego_t),1, *fsalida);
-		
-		/*printf("Estructura:\nID: %lu \nNOMBRE: %s\nDESARROLLADOR: %s\nPLATAFORMA: %s\nFECHA: %s\nPUNTAJE: %f\nRESENIAS: %lu\n", ptr_juego_db->id, ptr_juego_db->nombre, ptr_juego_db->desarrollador, ptr_juego_db->plataforma, ptr_juego_db->fecha, ptr_juego_db->puntaje, ptr_juego_db->resenias);*/
-	}	
-
-	fclose(*fsalida);
-	fclose(temp);
-
-	return ST_OK;
-
-
-	/*FILE * temp;
-	
-	while(fread(ptr_juego_db,sizeof(juego_t),1, *fsalida) == 1 )
-	{	
-		while(fread(ptr_juego_data,sizeof(juego_t),1, *fentrada) == 1)
+		while(fread(*ptr_juego_data,sizeof(juego_t),1, *fsalida) == 1)
 		{			
-			if(((ptr_juego_data)->id) != ((ptr_juego_db)->id))
+			if(((*ptr_juego_data)->id) == ((*ptr_juego_db)->id))
 			{
 			
-				if((temp=fopen("temp.bin","wb"))==NULL) 
-				{
-					printf("entre a error de archivo temporal\n");
-					return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
-				}
-				
-					fwrite(ptr_juego_db,sizeof(juego_t),1, temp);
-			
-			}else
-			{
-				fwrite(ptr_juego_data,sizeof(juego_t),1, temp);
+			fwrite(*ptr_juego_data,sizeof(juego_t),1, temp);
+			control++;
 			}
 
 		}
+		if(control == 0)
+		{
+			fwrite(*ptr_juego_db,sizeof(juego_t),1, temp);
+		}
+		control = 0;
+		fseek( *fsalida, 0, SEEK_SET );
 	}
 
 	fclose(*fsalida);
 	fclose(*fentrada);
+	fclose(temp);
 
 	if((*fsalida=fopen("db.bin","wb"))==NULL)
 	{
-		printf("entre a error de archivo temporal\n");
+		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
+	}
+	if((temp=fopen("temp.bin","rb"))==NULL)
+	{
 		return ST_ERROR_APERTURA_ARCHIVO_DE_ENTRADA;
 	}
 
@@ -458,6 +300,4 @@ status_t procesar_modificaciones(FILE ** fentrada, FILE ** fsalida, juego_t **pt
 	fclose(temp);
 
 	return ST_OK;
-
-	*/
 }
